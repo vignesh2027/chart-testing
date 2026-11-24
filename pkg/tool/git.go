@@ -42,7 +42,10 @@ func (g Git) AddWorktree(path string, ref string) error {
 }
 
 func (g Git) RemoveWorktree(path string) error {
-	return g.exec.RunProcess("git", "worktree", "remove", path)
+	// The worktree holds the previous chart revision, and building its
+	// dependencies leaves untracked files (charts/*.tgz) behind that make a
+	// plain "git worktree remove" refuse to delete it.
+	return g.exec.RunProcess("git", "worktree", "remove", "--force", path)
 }
 
 func (g Git) Show(file string, remote string, branch string) (string, error) {
